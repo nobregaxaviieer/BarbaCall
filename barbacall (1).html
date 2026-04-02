@@ -6,6 +6,7 @@
 <title>BarbaCall — Reativação Inteligente para Barbearias</title>
 <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --bg:#080808;--s1:#111;--s2:#191919;--s3:#222;
@@ -249,12 +250,351 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
   .tbar{padding:12px 14px;}
 }
 .risk-filters{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* ══════════ LANDING PAGE ══════════ */
+.land{flex-direction:column;background:var(--bg);overflow-y:auto;}
+
+/* NAV */
+.lnav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 48px;border-bottom:1px solid var(--b1);background:rgba(8,8,8,.9);backdrop-filter:blur(12px);flex-wrap:wrap;gap:12px;}
+.lnav-logo{font-family:var(--fd);font-size:20px;font-weight:700;letter-spacing:-.5px;}
+.lnav-logo em{color:var(--mu);font-style:normal;}
+.lnav-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.lnav-link{font-size:13px;font-weight:500;color:var(--mu);cursor:pointer;padding:6px 10px;border-radius:7px;transition:.12s;background:none;border:none;font-family:var(--fb);}
+.lnav-link:hover{color:var(--w);}
+.lnav-cta{font-size:13px;font-weight:700;padding:8px 20px;border-radius:8px;background:var(--w);color:#080808;border:none;cursor:pointer;font-family:var(--fb);transition:.12s;}
+.lnav-cta:hover{background:var(--ac);}
+@media(max-width:600px){.lnav{padding:14px 20px;}.lnav-links .lnav-link{display:none;}}
+
+/* HERO */
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 24px 80px;position:relative;overflow:hidden;}
+.hero-noise{position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(62,207,142,.06) 0,transparent 50%),radial-gradient(circle at 80% 20%,rgba(245,243,239,.04) 0,transparent 40%);pointer-events:none;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--gn2);border:1px solid rgba(62,207,142,.3);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:var(--gn);letter-spacing:.3px;margin-bottom:24px;animation:fadeUp .6s ease both;}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--gn);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.hero h1{font-family:var(--fd);font-size:clamp(36px,7vw,72px);font-weight:700;line-height:1.02;letter-spacing:-2px;max-width:760px;margin-bottom:22px;animation:fadeUp .7s .1s ease both;}
+.hero h1 em{color:var(--mu);font-style:normal;}
+.hero-sub{font-size:clamp(15px,2vw,18px);color:var(--mu);max-width:520px;line-height:1.7;margin-bottom:36px;animation:fadeUp .7s .2s ease both;}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;animation:fadeUp .7s .3s ease both;}
+.btn-hero-main{font-family:var(--fb);font-size:15px;font-weight:700;padding:14px 32px;border-radius:10px;background:var(--w);color:#080808;border:none;cursor:pointer;transition:.15s;}
+.btn-hero-main:hover{background:var(--ac);transform:translateY(-1px);}
+.btn-hero-ghost{font-family:var(--fb);font-size:15px;font-weight:600;padding:14px 28px;border-radius:10px;background:transparent;color:var(--mu);border:1px solid var(--b2);cursor:pointer;transition:.15s;}
+.btn-hero-ghost:hover{color:var(--w);border-color:var(--b3);}
+.hero-proof{margin-top:52px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;justify-content:center;animation:fadeUp .7s .45s ease both;}
+.hero-proof-num{font-family:var(--fd);font-size:26px;font-weight:700;color:var(--w);}
+.hero-proof-lbl{font-size:12px;color:var(--mu);margin-top:1px;}
+.proof-div{width:1px;height:32px;background:var(--b2);}
+.hero-dash-preview{margin-top:64px;width:100%;max-width:900px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;overflow:hidden;animation:fadeUp .8s .5s ease both;box-shadow:0 40px 120px rgba(0,0,0,.6);}
+.hdp-bar{padding:14px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px;}
+.hdp-dot{width:10px;height:10px;border-radius:50%;}
+.hdp-body{padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.hdp-card{background:var(--s2);border-radius:10px;padding:14px;}
+.hdp-cl{font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.hdp-cv{font-family:var(--fd);font-size:22px;font-weight:700;letter-spacing:-1px;}
+.hdp-chart{background:var(--s2);border-radius:10px;padding:14px;grid-column:1/-1;height:80px;display:flex;align-items:flex-end;gap:4px;overflow:hidden;}
+.hdp-bar-item{flex:1;border-radius:3px 3px 0 0;min-height:4px;transition:.3s;}
+@media(max-width:600px){.hdp-body{grid-template-columns:repeat(2,1fr);}.hdp-chart{grid-column:1/-1;}}
+
+/* FEATURES */
+.section{padding:80px 24px;max-width:1000px;margin:0 auto;width:100%;}
+.section-tag{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+.section h2{font-family:var(--fd);font-size:clamp(26px,4vw,42px);font-weight:700;letter-spacing:-1px;line-height:1.05;margin-bottom:14px;}
+.section-sub{font-size:15px;color:var(--mu);line-height:1.7;max-width:520px;margin-bottom:48px;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:700px){.feat-grid{grid-template-columns:1fr;}}
+.feat-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:24px;transition:.2s;}
+.feat-card:hover{border-color:var(--b2);background:var(--s2);}
+.feat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:18px;}
+.fi-g{background:var(--gn2);}
+.fi-w{background:rgba(245,243,239,.08);}
+.fi-a{background:var(--am2);}
+.fi-b{background:var(--bl2);}
+.fi-r{background:var(--rd2);}
+.feat-card h3{font-size:15px;font-weight:700;margin-bottom:6px;}
+.feat-card p{font-size:13px;color:var(--mu);line-height:1.6;}
+
+/* HOW IT WORKS */
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;}
+@media(max-width:700px){.how-grid{grid-template-columns:1fr 1fr;gap:20px;}}
+.how-step{text-align:center;padding:20px 16px;position:relative;}
+.how-step:not(:last-child)::after{content:'';position:absolute;top:28px;right:-1px;width:50%;height:1px;background:linear-gradient(90deg,var(--b2),transparent);pointer-events:none;}
+@media(max-width:700px){.how-step::after{display:none;}}
+.how-num{width:48px;height:48px;border-radius:50%;background:var(--s2);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:20px;font-weight:700;margin:0 auto 14px;}
+.how-title{font-size:14px;font-weight:700;margin-bottom:6px;}
+.how-desc{font-size:12px;color:var(--mu);line-height:1.6;}
+
+/* TESTIMONIALS */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:700px){.testi-grid{grid-template-columns:1fr;}}
+.testi-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:22px;}
+.testi-stars{display:flex;gap:2px;margin-bottom:12px;}
+.testi-star{color:var(--am);font-size:14px;}
+.testi-text{font-size:14px;line-height:1.7;color:var(--w);margin-bottom:16px;font-style:italic;}
+.testi-author{display:flex;align-items:center;gap:10px;}
+.testi-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.testi-name{font-size:13px;font-weight:600;}
+.testi-role{font-size:11px;color:var(--mu);}
+
+/* PRICING SECTION */
+.land-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;width:100%;}
+@media(max-width:700px){.land-plans{grid-template-columns:1fr;}}
+
+/* CTA FINAL */
+.cta-section{padding:80px 24px;text-align:center;position:relative;overflow:hidden;}
+.cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(245,243,239,.04) 0,transparent 60%);pointer-events:none;}
+.cta-section h2{font-family:var(--fd);font-size:clamp(28px,5vw,52px);font-weight:700;letter-spacing:-1.5px;line-height:1.05;margin-bottom:14px;}
+.cta-section p{font-size:15px;color:var(--mu);margin-bottom:32px;line-height:1.7;}
+.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+/* FOOTER */
+.land-footer{border-top:1px solid var(--b1);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.land-footer-logo{font-family:var(--fd);font-size:17px;font-weight:700;letter-spacing:-.5px;}
+.land-footer-logo em{color:var(--mu);font-style:normal;}
+.land-footer-copy{font-size:12px;color:var(--mu);}
+@media(max-width:600px){.land-footer{padding:24px 20px;}}
 </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════
+     LANDING PAGE
+═══════════════════════════════ -->
+<div class="scr on land" id="sLanding">
+
+  <!-- NAV -->
+  <nav class="lnav">
+    <div class="lnav-logo">Barba<em>Call</em></div>
+    <div class="lnav-links">
+      <button class="lnav-link" onclick="scrollTo('sec-features')">Funcionalidades</button>
+      <button class="lnav-link" onclick="scrollTo('sec-how')">Como funciona</button>
+      <button class="lnav-link" onclick="scrollTo('sec-pricing')">Preços</button>
+      <button class="lnav-link" onclick="scrollTo('sec-testi')">Depoimentos</button>
+      <button class="lnav-link" onclick="goS('sLogin')">Entrar</button>
+      <button class="lnav-cta" onclick="goS('sRegister')">Começar grátis →</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-noise"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-badge"><div class="hero-badge-dot"></div>Novo · Reativação automatizada para barbearias</div>
+    <h1>Seus clientes<br/>sumiram.<br/><em>A gente traz</em><br/>de volta.</h1>
+    <p class="hero-sub">BarbaCall detecta automaticamente quem faz dias que não aparece e dispara uma mensagem personalizada pelo WhatsApp — sem você fazer nada.</p>
+    <div class="hero-btns">
+      <button class="btn-hero-main" onclick="goS('sRegister')">Testar 14 dias grátis →</button>
+      <button class="btn-hero-ghost" onclick="scrollTo('sec-features')">Ver como funciona</button>
+    </div>
+    <div class="hero-proof">
+      <div><div class="hero-proof-num">+2.400</div><div class="hero-proof-lbl">barbearias usando</div></div>
+      <div class="proof-div"></div>
+      <div><div class="hero-proof-num">R$840</div><div class="hero-proof-lbl">faturamento médio recuperado/mês</div></div>
+      <div class="proof-div"></div>
+      <div><div class="hero-proof-num">25%</div><div class="hero-proof-lbl">taxa de reativação</div></div>
+    </div>
+    <!-- MINI DASHBOARD PREVIEW -->
+    <div class="hero-dash-preview">
+      <div class="hdp-bar">
+        <div class="hdp-dot" style="background:#FF5F57"></div>
+        <div class="hdp-dot" style="background:#FFBC2E"></div>
+        <div class="hdp-dot" style="background:#28CA41"></div>
+        <span style="font-size:11px;color:var(--mu);margin-left:8px;font-family:var(--fb)">barbacall.vercel.app — Dashboard</span>
+      </div>
+      <div class="hdp-body">
+        <div class="hdp-card"><div class="hdp-cl">Clientes</div><div class="hdp-cv">127</div></div>
+        <div class="hdp-card"><div class="hdp-cl">Inativos</div><div class="hdp-cv" style="color:var(--rd)">38</div></div>
+        <div class="hdp-card"><div class="hdp-cl">Faturamento</div><div class="hdp-cv" style="color:var(--gn)">R$3.2k</div></div>
+        <div class="hdp-card"><div class="hdp-cl">Reativados</div><div class="hdp-cv">12</div></div>
+        <div class="hdp-chart" id="heroChart"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <div id="sec-features" style="width:100%;display:flex;justify-content:center;">
+  <section class="section">
+    <div class="section-tag">✦ Funcionalidades</div>
+    <h2>Tudo que sua<br/>barbearia precisa.</h2>
+    <p class="section-sub">Do cadastro do cliente ao disparo automático — um sistema completo que trabalha por você enquanto você foca nos cortes.</p>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon fi-g">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="var(--gn)"><path d="M13 2H3a1 1 0 00-1 1v2l6 4 6-4V3a1 1 0 00-1-1zm1 5.27l-6 4-6-4V13a1 1 0 001 1h10a1 1 0 001-1V7.27z"/></svg>
+        </div>
+        <h3>Alerta automático no WhatsApp</h3>
+        <p>O sistema detecta quem ficou 30, 60 ou 90 dias sem cortar e dispara uma mensagem personalizada automaticamente. Sem esforço da sua parte.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-w">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="var(--w)"><circle cx="6" cy="5" r="3"/><path d="M1 13c0-3 2.5-5 5-5s5 2 5 5"/><circle cx="12" cy="6" r="2.5"/><path d="M12 9c1.5 0 3 1 3 3.5"/></svg>
+        </div>
+        <h3>Perfil completo de cada cliente</h3>
+        <p>Nome, telefone, endereço, histórico de cortes e última visita tudo em um lugar. Conheça seu cliente de verdade.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-a">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="var(--am)"><path d="M2 2h12v2H2zm0 4h8v2H2zm0 4h10v2H2z"/></svg>
+        </div>
+        <h3>Campanhas em massa</h3>
+        <p>Selecione um grupo de clientes inativos, escreva a mensagem, adicione um cupom e dispare para todos de uma só vez. Simples assim.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-b">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="var(--bl)"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        </div>
+        <h3>Dashboard com gráficos reais</h3>
+        <p>Veja seus ganhos diários, acompanhe a meta mensal em tempo real e entenda o comportamento dos seus clientes com dados visuais.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-r">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="var(--rd)"><path d="M8 1v6l3-3M8 7L5 4M2 9c0 3.3 2.7 6 6 6s6-2.7 6-6"/></svg>
+        </div>
+        <h3>Import de clientes via CSV</h3>
+        <p>Já tem uma lista de clientes? Importe em segundos com um arquivo CSV. Suporte a nome, telefone, endereço, ticket e última visita.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-g">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="var(--gn)"><path d="M8 1l1.8 5.4H16l-4.9 3.5 1.8 5.6L8 12l-4.9 3.5 1.8-5.6L0 6.4h6.2z"/></svg>
+        </div>
+        <h3>Cupons e promoções</h3>
+        <p>Gere cupons automáticos e inclua nas mensagens de reativação. O cliente recebe um incentivo real para voltar — e você ganha o corte.</p>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div id="sec-how" style="width:100%;border-top:1px solid var(--b1);padding:80px 0;">
+  <section class="section" style="padding:0 24px;">
+    <div style="text-align:center;margin-bottom:52px;">
+      <div class="section-tag" style="justify-content:center;">✦ Como funciona</div>
+      <h2 style="margin:0 auto;">4 passos.<br/>Resultado no mesmo dia.</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-title">Crie sua conta</div>
+        <div class="how-desc">Cadastro em 2 minutos. Nome, barbearia, e-mail e senha. Nada de cartão de crédito.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-title">Cadastre seus clientes</div>
+        <div class="how-desc">Manualmente ou importando um CSV com sua lista existente. Simples e rápido.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-title">O sistema detecta inativos</div>
+        <div class="how-desc">Automaticamente vemos quem faz 30, 60 ou 90 dias sem aparecer e alerta você.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">4</div>
+        <div class="how-title">Cliente recebe e volta</div>
+        <div class="how-desc">Mensagem personalizada no WhatsApp com cupom. O cliente lembra de você e agenda.</div>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- TESTIMONIALS -->
+  <div id="sec-testi" style="width:100%;border-top:1px solid var(--b1);padding:80px 0;">
+  <section class="section" style="padding:0 24px;">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="section-tag" style="justify-content:center;">✦ Depoimentos</div>
+      <h2 style="margin:0 auto;">Quem usa,<br/>não quer parar.</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"No primeiro mês reativei 9 clientes que tinham sumido. Só esses 9 já pagaram o plano por 3 meses. Melhor investimento da barbearia."</p>
+        <div class="testi-author">
+          <div class="testi-av" style="background:rgba(62,207,142,.15);color:var(--gn)">MR</div>
+          <div><div class="testi-name">Marcos Rocha</div><div class="testi-role">Barbearia MR · Campina Grande, PB</div></div>
+        </div>
+      </div>
+      <div class="testi-card" style="border-color:var(--b2);">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Antes eu ficava tentando lembrar quem tinha sumido, às vezes ligava no horário errado. Agora o BarbaCall faz tudo. Meu faturamento subiu R$1.200 no mês."</p>
+        <div class="testi-author">
+          <div class="testi-av" style="background:rgba(245,158,11,.15);color:var(--am)">JP</div>
+          <div><div class="testi-name">Jonas Pereira</div><div class="testi-role">Barbearia JP Style · João Pessoa, PB</div></div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Interface muito simples, qualquer pessoa aprende em 10 minutos. E o suporte responde na hora. Indico pra todos os barbeiros que conheço."</p>
+        <div class="testi-author">
+          <div class="testi-av" style="background:rgba(59,130,246,.15);color:var(--bl)">DS</div>
+          <div><div class="testi-name">Diego Santos</div><div class="testi-role">Studio DS Barber · Recife, PE</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- PRICING -->
+  <div id="sec-pricing" style="width:100%;border-top:1px solid var(--b1);padding:80px 0;">
+  <section class="section" style="padding:0 24px;">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="section-tag" style="justify-content:center;">✦ Preços</div>
+      <h2 style="margin:0 auto;">Começa de graça.<br/>Cresce com você.</h2>
+      <p style="font-size:14px;color:var(--mu);margin-top:12px;line-height:1.7;">1 corte recuperado já paga o plano inteiro.</p>
+    </div>
+    <div class="land-plans">
+      <div class="plan">
+        <div class="pname">Free</div>
+        <div class="pprice">R$&nbsp;0<sub>/mês</sub></div>
+        <div class="plimit">Até 50 clientes</div>
+        <ul class="pfeats"><li>Lembretes básicos (+30 dias)</li><li>10 envios WhatsApp/mês</li><li>Dashboard simples</li><li>Cadastro manual</li></ul>
+        <button class="btn-plan" onclick="goS('sRegister')">Começar grátis</button>
+      </div>
+      <div class="plan feat">
+        <div class="feat-pill">⚡ Mais popular</div>
+        <div class="pname">Pro</div>
+        <div class="pprice">R$&nbsp;29<sub>/mês</sub></div>
+        <div class="plimit">Até 500 clientes</div>
+        <ul class="pfeats"><li>WhatsApp ilimitado</li><li>Campanhas em massa</li><li>Import CSV</li><li>Gráfico de ganhos + meta mensal</li><li>Cupons automáticos</li><li>Suporte via WhatsApp</li></ul>
+        <button class="btn-plan feat" onclick="goS('sRegister')">Testar 14 dias grátis</button>
+      </div>
+      <div class="plan">
+        <div class="pname">Turbo</div>
+        <div class="pprice">R$&nbsp;59<sub>/mês</sub></div>
+        <div class="plimit">Ilimitado</div>
+        <ul class="pfeats"><li>Tudo do Pro</li><li>IA personaliza mensagens</li><li>Integração com agenda</li><li>Relatórios avançados</li><li>Multi-usuário</li><li>Suporte prioritário 24h</li></ul>
+        <button class="btn-plan" onclick="goS('sRegister')">Testar 14 dias grátis</button>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <!-- CTA FINAL -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="section-tag" style="justify-content:center;margin-bottom:16px;">✦ Comece agora</div>
+    <h2>Quanto você perdeu<br/>este mês com clientes<br/>que sumiram?</h2>
+    <p>Cada cliente inativo é dinheiro parado. O BarbaCall traz eles de volta — automaticamente.</p>
+    <div class="cta-btns">
+      <button class="btn-hero-main" onclick="goS('sRegister')">Criar conta grátis agora →</button>
+      <button class="btn-hero-ghost" onclick="goS('sLogin')">Já tenho conta</button>
+    </div>
+    <p style="font-size:12px;color:var(--mu);margin-top:20px;">14 dias grátis · Sem cartão de crédito · Cancele quando quiser</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="land-footer">
+    <div class="land-footer-logo">Barba<em>Call</em></div>
+    <div class="land-footer-copy">© 2026 BarbaCall. Feito para barbearias brasileiras.</div>
+    <div style="display:flex;gap:16px;">
+      <span style="font-size:12px;color:var(--mu);cursor:pointer">Privacidade</span>
+      <span style="font-size:12px;color:var(--mu);cursor:pointer">Termos</span>
+      <span style="font-size:12px;color:var(--mu);cursor:pointer">Contato</span>
+    </div>
+  </footer>
+
+</div><!-- /landing -->
+
 <!-- ═══ LOGIN ═══ -->
-<div class="scr on auth-wrap" id="sLogin">
+<div class="scr auth-wrap" id="sLogin">
   <div class="grid-bg"></div>
   <div class="card">
     <div class="logo-big">Barba<em>Call</em></div>
@@ -264,7 +604,7 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
     <div class="fl"><label>E-mail</label><input class="fi" id="lEmail" type="email" placeholder="seu@email.com"/></div>
     <div class="fl"><label>Senha</label><input class="fi" id="lPass" type="password" placeholder="••••••••" onkeyup="if(event.key==='Enter')doLogin()"/></div>
     <button class="btn-main" onclick="doLogin()">Entrar</button>
-    <div class="card-foot">Não tem conta? <a onclick="go('sRegister')">Criar grátis</a> · <a onclick="go('sPricing')">Ver planos</a></div>
+    <div class="card-foot">Não tem conta? <a onclick="go('sRegister')">Criar grátis</a> · <a onclick="go('sPricing')">Ver planos</a> · <a onclick="go('sLanding')">← Início</a></div>
   </div>
 </div>
 
@@ -286,7 +626,7 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
       <div class="pw-bar" id="pwBar1"></div>
     </div>
     <button class="btn-main" onclick="doRegister()">Criar conta grátis</button>
-    <div class="card-foot">Já tem conta? <a onclick="go('sLogin')">Entrar</a> · <a onclick="go('sPricing')">Ver planos</a></div>
+    <div class="card-foot">Já tem conta? <a onclick="go('sLogin')">Entrar</a> · <a onclick="go('sPricing')">Ver planos</a> · <a onclick="go('sLanding')">← Início</a></div>
   </div>
 </div>
 
@@ -637,20 +977,96 @@ const RLBL = {critico:'Crítico',alto:'Alto risco',medio:'Médio risco',ok:'Em d
 const RCLS = {critico:'t-cr',alto:'t-al',medio:'t-md',ok:'t-ok'};
 const RCOL = {critico:'var(--rd)',alto:'var(--am)',medio:'var(--bl)',ok:'var(--gn)'};
 
+// ═══ SUPABASE ═══
+const SURL = 'https://jbekqarwfcjetoqocona.supabase.co';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpiZWtxYXJ3ZmNqZXRvcW9jb25hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0OTMwNTYsImV4cCI6MjA5MDA2OTA1Nn0.XBXEQ440F4HjSmuihgA-_384omajTtiBhqvzBw_-vR8';
+const sb = supabase.createClient(SURL, SKEY);
+
 // ═══ STATE ═══
 let S = { user:null, clients:[], campaigns:[], meta:5000, curClient:null, rf:'all', csvBuf:[], cG:null, cM:null };
-const UK = 'bc_users';
-const DK = () => 'bc_d_' + S.user?.email;
 
-function save(){ if(S.user) localStorage.setItem(DK(), JSON.stringify({clients:S.clients,campaigns:S.campaigns,meta:S.meta})); }
+// ═══ SUPABASE — SAVE / LOAD ═══
+async function save(){
+  if(!S.user) return;
+  const uid = S.user.id;
+  // upsert barbershop config
+  await sb.from('barbershop').upsert({
+    user_id: uid,
+    biz_name: S.user.biz||'',
+    phone: S.user.phone||'',
+    plan: S.user.plan||'Free',
+    meta: S.meta,
+    updated_at: new Date().toISOString()
+  });
+}
 
-function load(){
-  try{
-    const d = JSON.parse(localStorage.getItem(DK())||'{}');
-    S.clients   = d.clients   || seedClients();
-    S.campaigns = d.campaigns || [];
-    S.meta      = d.meta      || 5000;
-  } catch(e){ S.clients = seedClients(); }
+async function saveClients(){
+  if(!S.user) return;
+  const uid = S.user.id;
+  // delete all then reinsert (simple approach for MVP)
+  await sb.from('clients').delete().eq('user_id', uid);
+  if(S.clients.length){
+    const rows = S.clients.map(c=>({
+      id: c.id.length===36 ? c.id : undefined,
+      user_id: uid,
+      name: c.name,
+      phone: c.phone||'',
+      addr: c.addr||'',
+      last_cut: c.lastCut||null,
+      ticket: Number(c.ticket)||45,
+      hist: c.hist||[]
+    }));
+    await sb.from('clients').insert(rows);
+  }
+}
+
+async function saveCampaigns(){
+  if(!S.user) return;
+  const uid = S.user.id;
+  await sb.from('campaigns').delete().eq('user_id', uid);
+  if(S.campaigns.length){
+    const rows = S.campaigns.map(c=>({
+      user_id: uid,
+      name: c.name,
+      target: c.target||'',
+      sent: c.sent||0,
+      opened: c.opened||0,
+      converted: c.converted||0
+    }));
+    await sb.from('campaigns').insert(rows);
+  }
+}
+
+async function load(){
+  if(!S.user) return;
+  const uid = S.user.id;
+  // Load clients
+  const {data:clients} = await sb.from('clients').select('*').eq('user_id', uid);
+  S.clients = (clients||[]).map(c=>({
+    id: c.id,
+    name: c.name,
+    phone: c.phone||'',
+    addr: c.addr||'',
+    lastCut: c.last_cut||'',
+    ticket: Number(c.ticket)||45,
+    hist: c.hist||[]
+  }));
+  if(!S.clients.length) S.clients = seedClients();
+  // Load campaigns
+  const {data:camps} = await sb.from('campaigns').select('*').eq('user_id', uid).order('created_at', {ascending:false});
+  S.campaigns = (camps||[]).map(c=>({
+    id: c.id, name: c.name, target: c.target||'',
+    sent: c.sent||0, opened: c.opened||0, converted: c.converted||0,
+    date: new Date(c.created_at).toLocaleDateString('pt-BR')
+  }));
+  // Load barbershop config
+  const {data:biz} = await sb.from('barbershop').select('*').eq('user_id', uid).single();
+  if(biz){
+    S.meta = Number(biz.meta)||5000;
+    S.user.biz   = biz.biz_name||S.user.biz||'';
+    S.user.phone = biz.phone||S.user.phone||'';
+    S.user.plan  = biz.plan||'Free';
+  }
 }
 
 function seedClients(){
@@ -672,24 +1088,29 @@ function seedClients(){
 }
 
 // ═══ AUTH ═══
-function getUsers(){ return JSON.parse(localStorage.getItem(UK)||'[]'); }
-function saveUsers(u){ localStorage.setItem(UK, JSON.stringify(u)); }
-
-function doLogin(){
+async function doLogin(){
   const email = $('lEmail').value.trim().toLowerCase();
   const pass  = $('lPass').value;
   const err   = $('loginErr');
-  err.style.display = 'none';
+  err.style.display='none';
   if(!email||!pass){ err.textContent='Preencha e-mail e senha.'; err.style.display='block'; return; }
-  const users = getUsers();
-  const u = users.find(x => x.email===email && x.pass===pass);
-  if(!u){ err.style.display='block'; return; }
-  S.user = u;
-  load();
+  const {data, error} = await sb.auth.signInWithPassword({email, password:pass});
+  if(error){ err.textContent='E-mail ou senha incorretos.'; err.style.display='block'; return; }
+  S.user = {
+    id: data.user.id,
+    email: data.user.email,
+    name: data.user.user_metadata?.name||email.split('@')[0],
+    biz:  data.user.user_metadata?.biz||'',
+    phone:data.user.user_metadata?.phone||'',
+    plan: data.user.user_metadata?.plan||'Free'
+  };
+  showLoading('Carregando seus dados...');
+  await load();
+  hideLoading();
   enterApp();
 }
 
-function doRegister(){
+async function doRegister(){
   const name  = $('rName').value.trim();
   const email = $('rEmail').value.trim().toLowerCase();
   const biz   = $('rBiz').value.trim();
@@ -700,24 +1121,70 @@ function doRegister(){
   if(!name||!email||!biz||!pass){ err.textContent='Preencha todos os campos.'; err.style.display='block'; return; }
   if(pass.length<8){ err.textContent='Senha deve ter ao menos 8 caracteres.'; err.style.display='block'; return; }
   if(!/\S+@\S+\.\S+/.test(email)){ err.textContent='E-mail inválido.'; err.style.display='block'; return; }
-  const users = getUsers();
-  if(users.find(x=>x.email===email)){ err.textContent='Este e-mail já está cadastrado.'; err.style.display='block'; return; }
-  const plan = localStorage.getItem('bc_plan')||'Pro';
-  const u = {name, email, biz, phone, pass, plan};
-  users.push(u);
-  saveUsers(users);
-  S.user = u;
-  load();
+  const {data, error} = await sb.auth.signUp({
+    email, password: pass,
+    options:{ data:{ name, biz, phone, plan: S.selPlan||'Free' } }
+  });
+  if(error){
+    err.textContent = error.message.includes('already') ? 'E-mail já cadastrado. Faça login.' : error.message;
+    err.style.display='block'; return;
+  }
+  S.user = {
+    id: data.user.id, email, name, biz, phone, plan: S.selPlan||'Free'
+  };
+  // seed initial data for new user
+  S.clients = seedClients();
+  showLoading('Criando sua conta...');
+  await save();
+  await saveClients();
+  hideLoading();
   enterApp();
 }
 
-function choosePlan(p){ localStorage.setItem('bc_plan',p); go('sRegister'); }
+let S_SEL_PLAN = 'Free';
+function choosePlan(p){ S_SEL_PLAN = p; S.selPlan = p; go('sRegister'); }
 
-function doLogout(){
+async function doLogout(){
+  await sb.auth.signOut();
   S.user=null; S.clients=[]; S.campaigns=[];
   $('lEmail').value=''; $('lPass').value='';
   $('loginErr').style.display='none';
-  go('sLogin');
+  go('sLanding');
+}
+
+// Auto-login if session exists
+sb.auth.onAuthStateChange(async (event, session) => {
+  if(event==='SIGNED_IN' && session && !S.user){
+    const u = session.user;
+    S.user = {
+      id: u.id, email: u.email,
+      name: u.user_metadata?.name||u.email.split('@')[0],
+      biz:  u.user_metadata?.biz||'',
+      phone:u.user_metadata?.phone||'',
+      plan: u.user_metadata?.plan||'Free'
+    };
+    showLoading('Restaurando sessão...');
+    await load();
+    hideLoading();
+    enterApp();
+  }
+});
+
+function showLoading(msg){
+  let el = document.getElementById('loadingOverlay');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'loadingOverlay';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(8,8,8,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;';
+    el.innerHTML = '<div style="font-family:var(--fd);font-size:22px;font-weight:700;color:#F5F3EF;letter-spacing:-.5px;margin-bottom:16px;">Barba<span style=color:#5A5755>Call</span></div><div id="loadMsg" style="font-size:13px;color:#5A5755;"></div><div style="margin-top:20px;width:40px;height:40px;border:2px solid #222;border-top-color:#F5F3EF;border-radius:50%;animation:spin .8s linear infinite"></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
+    document.body.appendChild(el);
+  }
+  document.getElementById('loadMsg').textContent = msg||'';
+  el.style.display='flex';
+}
+function hideLoading(){
+  const el = document.getElementById('loadingOverlay');
+  if(el) el.style.display='none';
 }
 
 function enterApp(){
@@ -743,7 +1210,34 @@ function enterApp(){
 function go(id){
   document.querySelectorAll('.scr').forEach(e=>e.classList.remove('on'));
   $(id).classList.add('on');
+  window.scrollTo(0,0);
 }
+// alias used by landing page buttons
+function goS(id){ go(id); }
+
+function scrollTo(secId){
+  const el = document.getElementById(secId);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// hero mini-chart bars
+(function(){
+  const heights = [30,45,28,60,52,38,72,65,48,80,70,55,85,90,78,62,70,88,95,82,75,92,85,68,90,100,88,76,95,98];
+  const colors  = heights.map(h=>h>80?'rgba(62,207,142,.7)':'rgba(245,243,239,.15)');
+  setTimeout(()=>{
+    const c = document.getElementById('heroChart');
+    if(!c) return;
+    heights.forEach((h,i)=>{
+      const b = document.createElement('div');
+      b.className = 'hdp-bar-item';
+      b.style.height = '4px';
+      b.style.background = colors[i];
+      b.style.transitionDelay = (i*18)+'ms';
+      c.appendChild(b);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ b.style.height=h+'%'; }));
+    });
+  }, 600);
+})();
 
 function tab(t, el){
   ['Dash','Clientes','Reat','Camp','Cfg'].forEach(x=>{ const e=$(('t'+x)); if(e) e.style.display='none'; });
@@ -875,7 +1369,7 @@ function genCpn(){
   const list=['VOLTEI10','SAUDADE15','BARBA20','PROMO15','CORTE10'];
   $('pCpn').value = list[Math.floor(Math.random()*list.length)];
 }
-function sendAlert(){
+async function sendAlert(){
   const c = S.curClient; if(!c) return;
   const msg = $('pMsg').value;
   const cpn = $('pCpn').value.trim();
@@ -883,28 +1377,30 @@ function sendAlert(){
   const phone = c.phone.replace(/\D/g,'');
   if(!c.hist) c.hist=[];
   c.hist.unshift({type:'WhatsApp',date:new Date().toLocaleDateString('pt-BR'),cpn});
-  save();
+  await saveClients();
   renderHist(c);
   window.open('https://wa.me/55'+phone+'?text='+encodeURIComponent(full),'_blank');
   toast('Alerta enviado para '+c.name,'var(--gn)');
 }
 
 // ═══ CLIENTS ═══
-function addClient(){
+async function addClient(){
   const name = $('acN').value.trim();
   const phone= $('acP').value.trim();
   const addr = $('acA').value.trim();
   const date = $('acD').value;
   const ticket=Number($('acT').value)||45;
   if(!name||!phone){ toast('Preencha nome e telefone','var(--rd)'); return; }
-  S.clients.unshift({id:uid(),name,phone,addr,lastCut:date||new Date().toISOString().split('T')[0],ticket,hist:[]});
-  save(); closeM('mAdd'); renderAll();
+  const newClient = {id:uid(),name,phone,addr,lastCut:date||new Date().toISOString().split('T')[0],ticket,hist:[]};
+  S.clients.unshift(newClient);
+  await saveClients();
+  closeM('mAdd'); renderAll();
   toast(name+' cadastrado!','var(--gn)');
   ['acN','acP','acA','acD','acT'].forEach(id=>$(id).value='');
 }
-function rmClient(id){
+async function rmClient(id){
   S.clients = S.clients.filter(c=>c.id!==id);
-  save(); renderAll(); toast('Cliente removido','var(--mu)');
+  await saveClients(); renderAll(); toast('Cliente removido','var(--mu)');
 }
 
 // ═══ CSV ═══
@@ -927,9 +1423,9 @@ function parseCSV(text){
   btn.style.display='block';
   btn.textContent='Importar '+S.csvBuf.length+' clientes';
 }
-function importCSV(){
+async function importCSV(){
   S.clients=[...S.csvBuf,...S.clients];
-  save(); closeM('mUpload'); renderAll();
+  await saveClients(); closeM('mUpload'); renderAll();
   toast(S.csvBuf.length+' clientes importados!','var(--gn)');
   S.csvBuf=[];
   $('csvPrev').style.display='none';
@@ -950,46 +1446,46 @@ function renderCamp(){
       </div>
     </div>`).join('');
 }
-function fireCamp(){
+async function fireCamp(){
   const name = $('caN').value.trim()||'Campanha sem nome';
   const tgt  = $('caTgt').value;
   const tgts = {all:'Todos inativos',critico:'Crítico +90d',alto:'Alto risco 60d',medio:'Médio risco 30d'};
   let list = S.clients.filter(c=>dAgo(c.lastCut)>=30);
   if(tgt!=='all') list=list.filter(c=>riskOf(dAgo(c.lastCut))===tgt);
   S.campaigns.unshift({id:uid(),name,date:new Date().toLocaleDateString('pt-BR'),target:tgts[tgt]||tgt,sent:list.length,opened:Math.floor(list.length*.6),converted:Math.floor(list.length*.2)});
-  save(); closeM('mCamp'); renderCamp();
+  await saveCampaigns(); closeM('mCamp'); renderCamp();
   toast('Campanha disparada para '+list.length+' clientes!','var(--gn)');
   $('caN').value=''; $('caMsg').value=''; $('caCpn').value='';
 }
 
 // ═══ SETTINGS ═══
-function saveProfile(){
-  const users=getUsers();
-  const idx=users.findIndex(u=>u.email===S.user.email);
-  S.user.name  = $('cfgName').value.trim()||S.user.name;
-  S.user.biz   = $('cfgBiz').value.trim();
-  S.user.phone = $('cfgPhone').value.trim();
-  if(idx>=0){ users[idx]=S.user; saveUsers(users); }
+async function saveProfile(){
+  const {error} = await sb.auth.updateUser({
+    data:{ name: $('cfgName').value.trim()||S.user.name, biz: $('cfgBiz').value.trim(), phone: $('cfgPhone').value.trim() }
+  });
+  if(!error){
+    S.user.name  = $('cfgName').value.trim()||S.user.name;
+    S.user.biz   = $('cfgBiz').value.trim();
+    S.user.phone = $('cfgPhone').value.trim();
+    await save();
+  }
   $('uAv').textContent   = initials(S.user.name);
   $('uName').textContent = S.user.name;
   $('greet').textContent = (new Date().getHours()<12?'Bom dia':new Date().getHours()<18?'Boa tarde':'Boa noite')+', '+S.user.name.split(' ')[0]+'!';
-  toast('Perfil atualizado!','var(--gn)');
+  toast(error?'Erro ao salvar':'Perfil atualizado!', error?'var(--rd)':'var(--gn)');
 }
-function chgPwd(){
-  const old=$('pwOld').value, nw=$('pwNew').value, cf=$('pwConf').value;
-  if(old!==S.user.pass){ toast('Senha atual incorreta','var(--rd)'); return; }
+async function chgPwd(){
+  const nw=$('pwNew').value, cf=$('pwConf').value;
   if(nw.length<8){ toast('Nova senha muito curta','var(--am)'); return; }
   if(nw!==cf){ toast('Senhas não coincidem','var(--rd)'); return; }
-  const users=getUsers();
-  const idx=users.findIndex(u=>u.email===S.user.email);
-  S.user.pass=nw;
-  if(idx>=0){ users[idx]=S.user; saveUsers(users); }
+  const {error} = await sb.auth.updateUser({password: nw});
+  if(error){ toast('Erro: '+error.message,'var(--rd)'); return; }
   ['pwOld','pwNew','pwConf'].forEach(id=>$(id).value='');
   toast('Senha alterada!','var(--gn)');
 }
-function saveMeta(){
+async function saveMeta(){
   const v=Number($('cfgMeta').value);
-  if(v>0){ S.meta=v; save(); renderMetrics(); toast('Meta: '+fmtM(v),'var(--gn)'); }
+  if(v>0){ S.meta=v; await save(); renderMetrics(); toast('Meta: '+fmtM(v),'var(--gn)'); }
 }
 function pwStr(v,barId){
   const el=$(barId);
