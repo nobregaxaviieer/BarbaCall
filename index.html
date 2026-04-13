@@ -1051,7 +1051,7 @@ async function load(){
     ticket: Number(c.ticket)||45,
     hist: c.hist||[]
   }));
-  if(!S.clients.length) S.clients = seedClients();
+
   // Load campaigns
   const {data:camps} = await sb.from('campaigns').select('*').eq('user_id', uid).order('created_at', {ascending:false});
   S.campaigns = (camps||[]).map(c=>({
@@ -1133,7 +1133,7 @@ async function doRegister(){
     id: data.user.id, email, name, biz, phone, plan: S.selPlan||'Free'
   };
   // seed initial data for new user
-  S.clients = seedClients();
+ 
   showLoading('Criando sua conta...');
   await save();
   await saveClients();
