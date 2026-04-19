@@ -1095,7 +1095,15 @@ async function doLogin(){
   err.style.display='none';
   if(!email||!pass){ err.textContent='Preencha e-mail e senha.'; err.style.display='block'; return; }
   const {data, error} = await sb.auth.signInWithPassword({email, password:pass});
-  if(error){ err.textContent='E-mail ou senha incorretos.'; err.style.display='block'; return; }
+  if (error) {
+    console.error("Erro real:", error.message);
+    // Se o erro for confirmação de e-mail, ele avisa. Se não, avisa senha/e-mail.
+    err.textContent = error.message.includes("Email not confirmed") 
+        ? '⚠️ Por favor, confirme seu e-mail no link enviado!' 
+        : 'E-mail ou senha incorretos.';
+    err.style.display = 'block';
+    return;
+}
   S.user = {
     id: data.user.id,
     email: data.user.email,
