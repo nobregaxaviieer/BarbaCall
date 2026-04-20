@@ -1115,9 +1115,10 @@ async function doLogin(){
     plan: data.user.user_metadata?.plan||'Free'
   };
   showLoading('Carregando seus dados...');
-  await load();
-  hideLoading();
-  enterApp();
+try { await load(); } catch(e){ console.error(e); }
+hideLoading();
+enterApp();
+renderPlanChip();
 }
 
 async function doRegister(){
@@ -1189,10 +1190,10 @@ sb.auth.onAuthStateChange(async (event, session) => {
       plan: u.user_metadata?.plan||'Free'
     };
     showLoading('Restaurando sessão...');
-    await load();
-    hideLoading();
-    enterApp();
-    renderPlanChip();
+try { await load(); } catch(e){ console.error(e); }
+hideLoading();
+enterApp();
+renderPlanChip();
   }
 });
 
