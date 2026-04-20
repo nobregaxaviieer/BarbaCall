@@ -1062,7 +1062,7 @@ async function load(){
     date: new Date(c.created_at).toLocaleDateString('pt-BR')
   }));
   // Load barbershop config
-  const {data:biz} = await sb.from('barbershop').select('*').eq('user_id', uid).single();
+  const {data:biz} = await sb.from('barbershop').select('*').eq('user_id', uid).maybeSingle();
   if(biz){
     S.meta = Number(biz.meta)||5000;
     S.user.biz   = biz.biz_name||S.user.biz||'';
