@@ -693,7 +693,6 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
   <aside class="sb" id="theSb">
     <div class="sb-top">
       <div class="sb-logo">Barba<em>Call</em></div>
-      <div class="sb-chip" id="sbChip">PRO</div>
     </div>
     <nav class="sb-nav">
       <div class="sb-sec">Principal</div>
@@ -1160,6 +1159,13 @@ function goUpgrade(){
     window.open('https://buy.stripe.com/test_4gMaEZ2v58F2b4C5Obf7i02','_blank');
   }
 }
+function renderPlanChip(){
+  const plan = S.user?.plan||'Free';
+  const chip = document.getElementById('sbChip');
+  const btn = document.getElementById('btnUpgrade');
+  if(chip) chip.textContent = plan;
+  if(btn) btn.style.display = plan==='Free' ? 'block' : 'none';
+}
 async function doLogout(){
   await sb.auth.signOut();
   S.user=null; S.clients=[]; S.campaigns=[];
@@ -1220,6 +1226,7 @@ function enterApp(){
   $('greet').textContent = (h<12?'Bom dia':h<18?'Boa tarde':'Boa noite')+', '+u.name.split(' ')[0]+'!';
   renderAll();
   initCharts();
+  renderPlanChip();
 }
 
 // ═══ NAVIGATION ═══
