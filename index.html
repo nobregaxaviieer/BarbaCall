@@ -1115,7 +1115,7 @@ async function doLogin(){
     plan: data.user.user_metadata?.plan||'Free'
   };
   showLoading('Carregando seus dados...');
-try { await load(); } catch(e){ console.error(e); }
+try {  } catch(e){ console.error(e); }
 hideLoading();
 enterApp();
 renderPlanChip();
