@@ -1630,14 +1630,14 @@ let S_fiados = JSON.parse(localStorage.getItem('bc_fiados')||'[]');
 function saveFiados(){ localStorage.setItem('bc_fiados', JSON.stringify(S_fiados)); }
 
 function addFiado(){
-  const nome = $('#fNome').value.trim();
-  const valor = parseFloat($('#fValor').value);
-  const data = $('#fData').value;
+  const nome = $('fNome').value.trim();
+  const valor = parseFloat($('fValor').value);
+  const data = $('fData').value;
   if(!nome||!valor||!data){ toast('Preencha todos os campos','#FF4444'); return; }
-  S_fiados.push({ id: uid(), nome, valor, data, pago: false, obs: $('#fObs').value.trim() });
+  S_fiados.push({ id: uid(), nome, valor, data, pago: false, obs: $('fObs').value.trim() });
   saveFiados();
   closeM('mFiado');
-  $('#fNome').value=''; $('#fValor').value=''; $('#fData').value=''; $('#fObs').value='';
+  $('fNome').value=''; $('fValor').value=''; $('fData').value=''; $('fObs').value='';
   renderFiados();
   toast('Fiado adicionado!');
 }
@@ -1654,9 +1654,9 @@ function deleteFiado(id){
 }
 
 function renderFiados(){
-  const tbl = $('#fiadoTbl');
+  const tbl = $('fiadoTbl');
   const total = S_fiados.filter(x=>!x.pago).reduce((a,b)=>a+b.valor,0);
-  $('#fiadoTotal').textContent = 'Total em aberto: R$'+total.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  $('fiadoTotal').textContent = 'Total em aberto: R$'+total.toLocaleString('pt-BR',{minimumFractionDigits:2});
   if(!S_fiados.length){ tbl.innerHTML='<div class="empty">Nenhum fiado cadastrado.</div>'; return; }
   tbl.innerHTML = S_fiados.map(f=>`
     <div class="fiado-row">
