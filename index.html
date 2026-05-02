@@ -362,6 +362,12 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
 .gasto-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;padding:12px 16px;border-bottom:1px solid var(--b1);gap:8px;align-items:center;}
 .gasto-row:last-child{border-bottom:none;}
 .tag-cat{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--bl2);color:var(--bl);}
+  /* INVESTIMENTOS */
+.invest-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px;padding:12px 16px;border-bottom:1px solid var(--b1);gap:8px;align-items:center;}
+.invest-row:last-child{border-bottom:none;}
+.tag-alta{background:var(--rd2);color:var(--rd);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
+.tag-media{background:var(--am2);color:var(--am);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
+.tag-baixa{background:var(--gn2);color:var(--gn);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 </style>
 </head>
 <body>
@@ -914,6 +920,66 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
         <div class="th">Ação</div>
       </div>
       <div id="fiadoTbl"><div class="empty">Nenhum fiado cadastrado.</div></div>
+    </div>
+  </div>
+</div>
+  <!-- INVESTIMENTOS -->
+<div id="tInvest" style="display:none">
+  <div class="tbar">
+    <div class="tbar-l"><h2>Investimentos</h2><p id="investResumo">—</p></div>
+    <div class="tbar-r">
+      <button class="btn-s btn-white" onclick="openM('mInvest')">+ Novo investimento</button>
+    </div>
+  </div>
+  <div class="cont">
+    <div class="mrow" style="grid-template-columns:repeat(3,1fr)">
+      <div class="mc"><div class="mc-lbl">Total planejado</div><div class="mc-val" id="iTotalPlan">R$0</div></div>
+      <div class="mc"><div class="mc-lbl">Já realizado</div><div class="mc-val" id="iTotalReal" style="color:var(--gn)">R$0</div></div>
+      <div class="mc"><div class="mc-lbl">Pendentes</div><div class="mc-val" id="iPendentes" style="color:var(--am)">0</div></div>
+    </div>
+    <div class="tbl">
+      <div class="th-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px">
+        <div class="th">Item</div>
+        <div class="th">Categoria</div>
+        <div class="th">Valor</div>
+        <div class="th">Prioridade</div>
+        <div class="th">Status</div>
+        <div class="th">Ação</div>
+      </div>
+      <div id="investTbl"><div class="empty">Nenhum investimento planejado.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL INVESTIMENTO -->
+<div class="mbg" id="mInvest">
+  <div class="mbox">
+    <div class="m-title">Novo Investimento</div>
+    <div class="fl"><label>Item</label><input class="fi" id="iItem" placeholder="Ex: Cadeira de barbeiro"/></div>
+    <div class="fl">
+      <label>Categoria</label>
+      <select class="fi" id="iCat">
+        <option value="Equipamento">Equipamento</option>
+        <option value="Mobiliário">Mobiliário</option>
+        <option value="Reforma">Reforma</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Tecnologia">Tecnologia</option>
+        <option value="Outros">Outros</option>
+      </select>
+    </div>
+    <div class="fl"><label>Valor estimado (R$)</label><input class="fi" id="iValor" type="number" placeholder="0,00"/></div>
+    <div class="fl">
+      <label>Prioridade</label>
+      <select class="fi" id="iPrior">
+        <option value="Alta">Alta</option>
+        <option value="Média">Média</option>
+        <option value="Baixa">Baixa</option>
+      </select>
+    </div>
+    <div class="fl"><label>Observação</label><input class="fi" id="iObs" placeholder="Opcional"/></div>
+    <div class="m-act">
+      <button class="btn-cancel" onclick="closeM('mInvest')">Cancelar</button>
+      <button class="btn-ok" onclick="addInvest()">Salvar</button>
     </div>
   </div>
 </div>
@@ -1774,6 +1840,61 @@ function renderGastos(){
       <div class="td">${new Date(g.data+'T00:00').toLocaleDateString('pt-BR')}</div>
       <div class="act-row">
         <button class="ic" onclick="deleteGasto('${g.id}')" title="Excluir">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+  // INVESTIMENTOS
+let S_invest = JSON.parse(localStorage.getItem('bc_invest')||'[]');
+function saveInvest(){ localStorage.setItem('bc_invest', JSON.stringify(S_invest)); }
+
+function addInvest(){
+  const item = $('iItem').value.trim();
+  const cat = $('iCat').value;
+  const valor = parseFloat($('iValor').value);
+  const prior = $('iPrior').value;
+  if(!item||!valor){ toast('Preencha todos os campos','#FF4444'); return; }
+  S_invest.push({ id: uid(), item, cat, valor, prior, feito: false, obs: $('iObs').value.trim() });
+  saveInvest();
+  closeM('mInvest');
+  $('iItem').value=''; $('iValor').value=''; $('iObs').value='';
+  renderInvest();
+  toast('Investimento adicionado!');
+}
+
+function toggleInvest(id){
+  const i = S_invest.find(x=>x.id===id);
+  if(i){ i.feito = !i.feito; saveInvest(); renderInvest(); }
+}
+
+function deleteInvest(id){
+  S_invest = S_invest.filter(x=>x.id!==id);
+  saveInvest();
+  renderInvest();
+}
+
+function renderInvest(){
+  const tbl = $('investTbl');
+  const total = S_invest.reduce((a,b)=>a+b.valor,0);
+  const realizado = S_invest.filter(x=>x.feito).reduce((a,b)=>a+b.valor,0);
+  const pendentes = S_invest.filter(x=>!x.feito).length;
+  $('iTotalPlan').textContent = 'R$'+total.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  $('iTotalReal').textContent = 'R$'+realizado.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  $('iPendentes').textContent = pendentes;
+  $('investResumo').textContent = `${S_invest.length} itens · ${pendentes} pendentes`;
+  if(!S_invest.length){ tbl.innerHTML='<div class="empty">Nenhum investimento planejado.</div>'; return; }
+  const priorOrder = {Alta:0,Média:1,Baixa:2};
+  const sorted = [...S_invest].sort((a,b)=>priorOrder[a.prior]-priorOrder[b.prior]);
+  tbl.innerHTML = sorted.map(i=>`
+    <div class="invest-row" style="${i.feito?'opacity:.5':''}">
+      <div class="td-main">${i.item}${i.obs?`<div class="cp">${i.obs}</div>`:''}</div>
+      <div><span class="tag-cat">${i.cat}</span></div>
+      <div class="td" style="font-weight:700">R$${i.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+      <div><span class="tag-${i.prior==='Alta'?'alta':i.prior==='Média'?'media':'baixa'}">${i.prior}</span></div>
+      <div><span class="${i.feito?'tag-pago':'tag-aberto'}">${i.feito?'Realizado':'Pendente'}</span></div>
+      <div class="act-row">
+        <button class="ic" onclick="toggleInvest('${i.id}')" title="${i.feito?'Desfazer':'Marcar feito'}">✓</button>
+        <button class="ic" onclick="deleteInvest('${i.id}')" title="Excluir">✕</button>
       </div>
     </div>
   `).join('');
