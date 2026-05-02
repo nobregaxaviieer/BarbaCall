@@ -358,6 +358,10 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
 .fiado-row:last-child{border-bottom:none;}
 .tag-pago{background:var(--gn2);color:var(--gn);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 .tag-aberto{background:var(--rd2);color:var(--rd);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
+  /* GASTOS */
+.gasto-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;padding:12px 16px;border-bottom:1px solid var(--b1);gap:8px;align-items:center;}
+.gasto-row:last-child{border-bottom:none;}
+.tag-cat{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;background:var(--bl2);color:var(--bl);}
 </style>
 </head>
 <body>
@@ -910,6 +914,58 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
         <div class="th">Ação</div>
       </div>
       <div id="fiadoTbl"><div class="empty">Nenhum fiado cadastrado.</div></div>
+    </div>
+  </div>
+</div>
+  <!-- GASTOS -->
+<div id="tGastos" style="display:none">
+  <div class="tbar">
+    <div class="tbar-l"><h2>Gastos</h2><p id="gastoResumo">—</p></div>
+    <div class="tbar-r">
+      <button class="btn-s btn-white" onclick="openM('mGasto')">+ Novo gasto</button>
+    </div>
+  </div>
+  <div class="cont">
+    <div class="mrow" style="grid-template-columns:repeat(3,1fr)">
+      <div class="mc"><div class="mc-lbl">Total do mês</div><div class="mc-val" id="gTotalMes" style="color:var(--rd)">R$0</div></div>
+      <div class="mc"><div class="mc-lbl">Maior gasto</div><div class="mc-val" id="gMaior">R$0</div></div>
+      <div class="mc"><div class="mc-lbl">Qtd. lançamentos</div><div class="mc-val" id="gQtd">0</div></div>
+    </div>
+    <div class="tbl">
+      <div class="th-row" style="grid-template-columns:2fr 1fr 1fr 1fr 80px">
+        <div class="th">Descrição</div>
+        <div class="th">Categoria</div>
+        <div class="th">Valor</div>
+        <div class="th">Data</div>
+        <div class="th">Ação</div>
+      </div>
+      <div id="gastoTbl"><div class="empty">Nenhum gasto cadastrado.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GASTO -->
+<div class="mbg" id="mGasto">
+  <div class="mbox">
+    <div class="m-title">Novo Gasto</div>
+    <div class="fl"><label>Descrição</label><input class="fi" id="gDesc" placeholder="Ex: Produto para cabelo"/></div>
+    <div class="fl">
+      <label>Categoria</label>
+      <select class="fi" id="gCat">
+        <option value="Produto">Produto</option>
+        <option value="Equipamento">Equipamento</option>
+        <option value="Aluguel">Aluguel</option>
+        <option value="Conta">Conta (água/luz/internet)</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Outros">Outros</option>
+      </select>
+    </div>
+    <div class="fl"><label>Valor (R$)</label><input class="fi" id="gValor" type="number" placeholder="0,00"/></div>
+    <div class="fl"><label>Data</label><input class="fi" id="gData" type="date"/></div>
+    <div class="fl"><label>Observação</label><input class="fi" id="gObs" placeholder="Opcional"/></div>
+    <div class="m-act">
+      <button class="btn-cancel" onclick="closeM('mGasto')">Cancelar</button>
+      <button class="btn-ok" onclick="addGasto()">Salvar</button>
     </div>
   </div>
 </div>
@@ -1667,6 +1723,57 @@ function renderFiados(){
       <div class="act-row">
         <button class="ic" onclick="pagarFiado('${f.id}')" title="${f.pago?'Reabrir':'Marcar pago'}">✓</button>
         <button class="ic" onclick="deleteFiado('${f.id}')" title="Excluir">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+  // GASTOS
+let S_gastos = JSON.parse(localStorage.getItem('bc_gastos')||'[]');
+function saveGastos(){ localStorage.setItem('bc_gastos', JSON.stringify(S_gastos)); }
+
+function addGasto(){
+  const desc = $('gDesc').value.trim();
+  const cat = $('gCat').value;
+  const valor = parseFloat($('gValor').value);
+  const data = $('gData').value;
+  if(!desc||!valor||!data){ toast('Preencha todos os campos','#FF4444'); return; }
+  S_gastos.push({ id: uid(), desc, cat, valor, data, obs: $('gObs').value.trim() });
+  saveGastos();
+  closeM('mGasto');
+  $('gDesc').value=''; $('gValor').value=''; $('gData').value=''; $('gObs').value='';
+  renderGastos();
+  toast('Gasto adicionado!');
+}
+
+function deleteGasto(id){
+  S_gastos = S_gastos.filter(x=>x.id!==id);
+  saveGastos();
+  renderGastos();
+}
+
+function renderGastos(){
+  const tbl = $('gastoTbl');
+  const agora = new Date();
+  const mesAtual = S_gastos.filter(g=>{
+    const d = new Date(g.data);
+    return d.getMonth()===agora.getMonth() && d.getFullYear()===agora.getFullYear();
+  });
+  const total = mesAtual.reduce((a,b)=>a+b.valor,0);
+  const maior = S_gastos.length ? Math.max(...S_gastos.map(g=>g.valor)) : 0;
+  $('gTotalMes').textContent = 'R$'+total.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  $('gMaior').textContent = 'R$'+maior.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  $('gQtd').textContent = S_gastos.length;
+  $('gastoResumo').textContent = `${S_gastos.length} lançamentos · R$${total.toLocaleString('pt-BR',{minimumFractionDigits:2})} este mês`;
+  if(!S_gastos.length){ tbl.innerHTML='<div class="empty">Nenhum gasto cadastrado.</div>'; return; }
+  const sorted = [...S_gastos].sort((a,b)=>new Date(b.data)-new Date(a.data));
+  tbl.innerHTML = sorted.map(g=>`
+    <div class="gasto-row">
+      <div class="td-main">${g.desc}${g.obs?`<div class="cp">${g.obs}</div>`:''}</div>
+      <div><span class="tag-cat">${g.cat}</span></div>
+      <div class="td" style="color:var(--rd);font-weight:700">R$${g.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+      <div class="td">${new Date(g.data+'T00:00').toLocaleDateString('pt-BR')}</div>
+      <div class="act-row">
+        <button class="ic" onclick="deleteGasto('${g.id}')" title="Excluir">✕</button>
       </div>
     </div>
   `).join('');
