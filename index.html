@@ -353,6 +353,11 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
 .land-footer-logo em{color:var(--mu);font-style:normal;}
 .land-footer-copy{font-size:12px;color:var(--mu);}
 @media(max-width:600px){.land-footer{padding:24px 20px;}}
+  /* FIADOS */
+.fiado-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 100px;padding:12px 16px;border-bottom:1px solid var(--b1);gap:8px;align-items:center;}
+.fiado-row:last-child{border-bottom:none;}
+.tag-pago{background:var(--gn2);color:var(--gn);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
+.tag-aberto{background:var(--rd2);color:var(--rd);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 </style>
 </head>
 <body>
@@ -887,6 +892,42 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
     </div>
 
   </div>
+  <!-- FIADOS -->
+<div id="tFiados" style="display:none">
+  <div class="tbar">
+    <div class="tbar-l"><h2>Fiados</h2><p id="fiadoTotal">Total em aberto: R$0,00</p></div>
+    <div class="tbar-r">
+      <button class="btn-s btn-white" onclick="openM('mFiado')">+ Novo fiado</button>
+    </div>
+  </div>
+  <div class="cont">
+    <div class="tbl">
+      <div class="th-row" style="grid-template-columns:2fr 1fr 1fr 1fr 100px">
+        <div class="th">Cliente</div>
+        <div class="th">Valor</div>
+        <div class="th">Data</div>
+        <div class="th">Status</div>
+        <div class="th">Ação</div>
+      </div>
+      <div id="fiadoTbl"><div class="empty">Nenhum fiado cadastrado.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FIADO -->
+<div class="mbg" id="mFiado">
+  <div class="mbox">
+    <div class="m-title">Novo Fiado</div>
+    <div class="fl"><label>Nome do cliente</label><input class="fi" id="fNome" placeholder="João Silva"/></div>
+    <div class="fl"><label>Valor (R$)</label><input class="fi" id="fValor" type="number" placeholder="0,00"/></div>
+    <div class="fl"><label>Data</label><input class="fi" id="fData" type="date"/></div>
+    <div class="fl"><label>Observação</label><input class="fi" id="fObs" placeholder="Opcional"/></div>
+    <div class="m-act">
+      <button class="btn-cancel" onclick="closeM('mFiado')">Cancelar</button>
+      <button class="btn-ok" onclick="addFiado()">Salvar</button>
+    </div>
+  </div>
+</div>
 </div><!-- /app -->
 
 <!-- SIDE PANEL -->
@@ -1583,6 +1624,54 @@ function toast(msg, color='var(--gn)'){
   t.classList.add('on');
   setTimeout(()=>t.classList.remove('on'),3200);
 }
+  // FIADOS
+let S_fiados = JSON.parse(localStorage.getItem('bc_fiados')||'[]');
+
+function saveFiados(){ localStorage.setItem('bc_fiados', JSON.stringify(S_fiados)); }
+
+function addFiado(){
+  const nome = $('#fNome').value.trim();
+  const valor = parseFloat($('#fValor').value);
+  const data = $('#fData').value;
+  if(!nome||!valor||!data){ toast('Preencha todos os campos','#FF4444'); return; }
+  S_fiados.push({ id: uid(), nome, valor, data, pago: false, obs: $('#fObs').value.trim() });
+  saveFiados();
+  closeM('mFiado');
+  $('#fNome').value=''; $('#fValor').value=''; $('#fData').value=''; $('#fObs').value='';
+  renderFiados();
+  toast('Fiado adicionado!');
+}
+
+function pagarFiado(id){
+  const f = S_fiados.find(x=>x.id===id);
+  if(f){ f.pago = !f.pago; saveFiados(); renderFiados(); }
+}
+
+function deleteFiado(id){
+  S_fiados = S_fiados.filter(x=>x.id!==id);
+  saveFiados();
+  renderFiados();
+}
+
+function renderFiados(){
+  const tbl = $('#fiadoTbl');
+  const total = S_fiados.filter(x=>!x.pago).reduce((a,b)=>a+b.valor,0);
+  $('#fiadoTotal').textContent = 'Total em aberto: R$'+total.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  if(!S_fiados.length){ tbl.innerHTML='<div class="empty">Nenhum fiado cadastrado.</div>'; return; }
+  tbl.innerHTML = S_fiados.map(f=>`
+    <div class="fiado-row">
+      <div class="td-main">${f.nome}${f.obs?`<div class="cp">${f.obs}</div>`:''}</div>
+      <div class="td" style="color:var(--rd);font-weight:700">R$${f.valor.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+      <div class="td">${new Date(f.data+'T00:00').toLocaleDateString('pt-BR')}</div>
+      <div><span class="${f.pago?'tag-pago':'tag-aberto'}">${f.pago?'Pago':'Em aberto'}</span></div>
+      <div class="act-row">
+        <button class="ic" onclick="pagarFiado('${f.id}')" title="${f.pago?'Reabrir':'Marcar pago'}">✓</button>
+        <button class="ic" onclick="deleteFiado('${f.id}')" title="Excluir">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+  
 </script>
 </body>
 </html>
