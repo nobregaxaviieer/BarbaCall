@@ -1464,13 +1464,7 @@ function goS(id){ go(id); }
 function scrollTo(secId){
   const el = document.getElementById(secId);
   if(!el) return;
-  const landing = document.getElementById('sLanding');
-  if(landing){
-    landing.scrollTo({top: Math.floor(top - 80), behavior:'smooth'});
-    landing.scrollTo({top: top - 80, behavior:'smooth'});
-  } else {
-    el.scrollIntoView({behavior:'smooth', block:'start'});
-  }
+  el.scrollIntoView({behavior:'smooth'});
 }
   
   
