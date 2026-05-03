@@ -374,6 +374,7 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
 .tag-hoje{background:var(--am2);color:var(--am);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 .tag-futuro{background:var(--bl2);color:var(--bl);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 .tag-passado{background:var(--b1);color:var(--mu);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
+  .tag-confirmado{background:var(--gn2);color:var(--gn);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 </style>
 </head>
 <body>
@@ -1972,8 +1973,8 @@ function renderAgenda(){
   if(!S_agenda.length){ tbl.innerHTML='<div class="empty">Nenhum compromisso cadastrado.</div>'; return; }
   const sorted = [...S_agenda].sort((a,b)=>a.data.localeCompare(b.data));
   tbl.innerHTML = sorted.map(a=>{
-    const status = a.data===hoje?'hoje':a.data>hoje?'futuro':'passado';
-    const statusLabel = status==='hoje'?'Hoje':status==='futuro'?'Próximo':'Passado';
+    const status = a.confirmado ? 'confirmado' : a.data===hoje?'hoje':a.data>hoje?'futuro':'passado';
+    const statusLabel = a.confirmado?'Realizado':status==='hoje'?'Hoje':status==='futuro'?'Próximo':'Passado';
     return `
       <div class="agenda-row" style="${status==='passado'?'opacity:.5':''}">
         <div class="td-main">${a.titulo}${a.obs?`<div class="cp">${a.obs}</div>`:''}</div>
@@ -1981,11 +1982,18 @@ function renderAgenda(){
         <div class="td">${a.hora||'—'}</div>
         <div><span class="tag-${status}">${statusLabel}</span></div>
         <div class="act-row">
+          <div class="act-row">
+          <button class="ic" onclick="confirmarAgenda('${a.id}')" title="${a.confirmado?'Desconfirmar':'Confirmar realizado'}">✓</button>
           <button class="ic" onclick="deleteAgenda('${a.id}')" title="Excluir">✕</button>
+        </div>
         </div>
       </div>
     `;
   }).join('');
+}
+  function confirmarAgenda(id){
+  const a = S_agenda.find(x=>x.id===id);
+  if(a){ a.confirmado = !a.confirmado; saveAgenda(); renderAgenda(); }
 }
   
 </script>
