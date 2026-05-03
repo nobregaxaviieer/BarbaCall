@@ -1466,7 +1466,7 @@ function scrollTo(secId){
   if(!el) return;
   const landing = document.getElementById('sLanding');
   if(landing){
-    const top = el.getBoundingClientRect().top - landing.getBoundingClientRect().top + landing.scrollTop;
+    landing.scrollTo({top: Math.floor(top - 80), behavior:'smooth'});
     landing.scrollTo({top: top - 80, behavior:'smooth'});
   } else {
     el.scrollIntoView({behavior:'smooth', block:'start'});
