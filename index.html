@@ -959,6 +959,40 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
     </div>
   </div>
 </div>
+  <div class="tbar">
+    <div class="tbar-l"><h2>Agenda</h2><p id="agendaResumo">—</p></div>
+    <div class="tbar-r">
+      <button class="btn-s btn-white" onclick="openM('mAgenda')">+ Novo compromisso</button>
+    </div>
+  </div>
+  <div class="cont">
+    <div class="tbl">
+      <div class="th-row" style="grid-template-columns:2fr 1fr 1fr 1fr 80px">
+        <div class="th">Compromisso</div>
+        <div class="th">Data</div>
+        <div class="th">Hora</div>
+        <div class="th">Status</div>
+        <div class="th">Ação</div>
+      </div>
+      <div id="agendaTbl"><div class="empty">Nenhum compromisso cadastrado.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGENDA -->
+<div class="mbg" id="mAgenda">
+  <div class="mbox">
+    <div class="m-title">Novo Compromisso</div>
+    <div class="fl"><label>Título</label><input class="fi" id="agTitulo" placeholder="Ex: Reunião com fornecedor"/></div>
+    <div class="fl"><label>Data</label><input class="fi" id="agData" type="date"/></div>
+    <div class="fl"><label>Hora</label><input class="fi" id="agHora" type="time"/></div>
+    <div class="fl"><label>Observação</label><input class="fi" id="agObs" placeholder="Opcional"/></div>
+    <div class="m-act">
+      <button class="btn-cancel" onclick="closeM('mAgenda')">Cancelar</button>
+      <button class="btn-ok" onclick="addAgenda()">Salvar</button>
+    </div>
+  </div>
+</div>
         <div class="th">Ação</div>
       </div>
       <div id="fiadoTbl"><div class="empty">Nenhum fiado cadastrado.</div></div>
