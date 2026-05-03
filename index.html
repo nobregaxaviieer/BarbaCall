@@ -368,6 +368,12 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
 .tag-alta{background:var(--rd2);color:var(--rd);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 .tag-media{background:var(--am2);color:var(--am);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 .tag-baixa{background:var(--gn2);color:var(--gn);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
+  /* AGENDA */
+.agenda-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;padding:12px 16px;border-bottom:1px solid var(--b1);gap:8px;align-items:center;}
+.agenda-row:last-child{border-bottom:none;}
+.tag-hoje{background:var(--am2);color:var(--am);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
+.tag-futuro{background:var(--bl2);color:var(--bl);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
+.tag-passado{background:var(--b1);color:var(--mu);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;}
 </style>
 </head>
 <body>
@@ -1032,6 +1038,42 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
     <div class="m-act">
       <button class="btn-cancel" onclick="closeM('mGasto')">Cancelar</button>
       <button class="btn-ok" onclick="addGasto()">Salvar</button>
+    </div>
+  </div>
+</div>
+  <!-- AGENDA -->
+<div id="tAgenda" style="display:none">
+  <div class="tbar">
+    <div class="tbar-l"><h2>Agenda</h2><p id="agendaResumo">—</p></div>
+    <div class="tbar-r">
+      <button class="btn-s btn-white" onclick="openM('mAgenda')">+ Novo compromisso</button>
+    </div>
+  </div>
+  <div class="cont">
+    <div class="tbl">
+      <div class="th-row" style="grid-template-columns:2fr 1fr 1fr 1fr 80px">
+        <div class="th">Compromisso</div>
+        <div class="th">Data</div>
+        <div class="th">Hora</div>
+        <div class="th">Status</div>
+        <div class="th">Ação</div>
+      </div>
+      <div id="agendaTbl"><div class="empty">Nenhum compromisso cadastrado.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGENDA -->
+<div class="mbg" id="mAgenda">
+  <div class="mbox">
+    <div class="m-title">Novo Compromisso</div>
+    <div class="fl"><label>Título</label><input class="fi" id="agTitulo" placeholder="Ex: Reunião com fornecedor"/></div>
+    <div class="fl"><label>Data</label><input class="fi" id="agData" type="date"/></div>
+    <div class="fl"><label>Hora</label><input class="fi" id="agHora" type="time"/></div>
+    <div class="fl"><label>Observação</label><input class="fi" id="agObs" placeholder="Opcional"/></div>
+    <div class="m-act">
+      <button class="btn-cancel" onclick="closeM('mAgenda')">Cancelar</button>
+      <button class="btn-ok" onclick="addAgenda()">Salvar</button>
     </div>
   </div>
 </div>
@@ -1898,6 +1940,52 @@ function renderInvest(){
       </div>
     </div>
   `).join('');
+}
+  // AGENDA
+let S_agenda = JSON.parse(localStorage.getItem('bc_agenda')||'[]');
+function saveAgenda(){ localStorage.setItem('bc_agenda', JSON.stringify(S_agenda)); }
+
+function addAgenda(){
+  const titulo = $('agTitulo').value.trim();
+  const data = $('agData').value;
+  const hora = $('agHora').value;
+  if(!titulo||!data){ toast('Preencha título e data','#FF4444'); return; }
+  S_agenda.push({ id: uid(), titulo, data, hora, obs: $('agObs').value.trim() });
+  saveAgenda();
+  closeM('mAgenda');
+  $('agTitulo').value=''; $('agData').value=''; $('agHora').value=''; $('agObs').value='';
+  renderAgenda();
+  toast('Compromisso adicionado!');
+}
+
+function deleteAgenda(id){
+  S_agenda = S_agenda.filter(x=>x.id!==id);
+  saveAgenda();
+  renderAgenda();
+}
+
+function renderAgenda(){
+  const tbl = $('agendaTbl');
+  const hoje = new Date().toISOString().split('T')[0];
+  const proximos = S_agenda.filter(a=>a.data>=hoje).length;
+  $('agendaResumo').textContent = `${S_agenda.length} compromissos · ${proximos} próximos`;
+  if(!S_agenda.length){ tbl.innerHTML='<div class="empty">Nenhum compromisso cadastrado.</div>'; return; }
+  const sorted = [...S_agenda].sort((a,b)=>a.data.localeCompare(b.data));
+  tbl.innerHTML = sorted.map(a=>{
+    const status = a.data===hoje?'hoje':a.data>hoje?'futuro':'passado';
+    const statusLabel = status==='hoje'?'Hoje':status==='futuro'?'Próximo':'Passado';
+    return `
+      <div class="agenda-row" style="${status==='passado'?'opacity:.5':''}">
+        <div class="td-main">${a.titulo}${a.obs?`<div class="cp">${a.obs}</div>`:''}</div>
+        <div class="td">${new Date(a.data+'T00:00').toLocaleDateString('pt-BR')}</div>
+        <div class="td">${a.hora||'—'}</div>
+        <div><span class="tag-${status}">${statusLabel}</span></div>
+        <div class="act-row">
+          <button class="ic" onclick="deleteAgenda('${a.id}')" title="Excluir">✕</button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
   
 </script>
