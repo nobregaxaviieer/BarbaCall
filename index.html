@@ -1464,7 +1464,11 @@ function goS(id){ go(id); }
 function scrollTo(secId){
   const el = document.getElementById(secId);
   if(!el) return;
-  el.scrollIntoView({behavior:'smooth'});
+  const container = document.getElementById('sLanding');
+  if(container){
+    const offset = el.offsetTop - 80;
+    container.scrollTop = offset;
+  }
 }
   
   
