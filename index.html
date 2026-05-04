@@ -1078,6 +1078,18 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
     </div>
   </div>
 </div>
+  <!-- MODAL UPGRADE -->
+<div class="mbg" id="mUpgrade">
+  <div class="mbox" style="text-align:center;max-width:400px;">
+    <div style="font-size:36px;margin-bottom:12px;">⚡</div>
+    <div class="m-title" style="text-align:center;">Recurso exclusivo</div>
+    <p id="upgradeMsg" style="font-size:14px;color:var(--mu);line-height:1.7;margin-bottom:20px;">Para usar este recurso, você precisa de um plano superior.</p>
+    <div class="m-act">
+      <button class="btn-cancel" onclick="closeM('mUpgrade')">Agora não</button>
+      <button class="btn-ok" onclick="closeM('mUpgrade');goUpgrade()">Ver planos ⚡</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL FIADO -->
 <div class="mbg" id="mFiado">
