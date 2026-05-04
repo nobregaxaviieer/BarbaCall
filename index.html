@@ -1900,6 +1900,7 @@ let S_fiados = JSON.parse(localStorage.getItem('bc_fiados')||'[]');
 function saveFiados(){ localStorage.setItem('bc_fiados', JSON.stringify(S_fiados)); }
 
 function addFiado(){
+  if(!requirePro('Fiados')) return;
   const nome = $('fNome').value.trim();
   const valor = parseFloat($('fValor').value);
   const data = $('fData').value;
