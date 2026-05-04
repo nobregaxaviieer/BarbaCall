@@ -1081,6 +1081,33 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
       <button class="btn-ok" onclick="addAgenda()">Salvar</button>
     </div>
   </div>
+  <!-- IA ASSISTENTE -->
+<div id="tIa" style="display:none">
+  <div class="tbar">
+    <div class="tbar-l"><h2>Assistente IA ✦</h2><p>Exclusivo plano Turbo — peça sugestões, dicas e estratégias para sua barbearia</p></div>
+  </div>
+  <div class="cont">
+    <div style="max-width:680px;margin:0 auto;">
+      <div style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:24px;margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--mu);">💡 Sugestões de perguntas:</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-s btn-ghost" onclick="$('iaPergunta').value=this.textContent;perguntarIA()">Como precificar meu corte?</button>
+          <button class="btn-s btn-ghost" onclick="$('iaPergunta').value=this.textContent;perguntarIA()">Ideias para fidelizar clientes</button>
+          <button class="btn-s btn-ghost" onclick="$('iaPergunta').value=this.textContent;perguntarIA()">Como aumentar meu faturamento?</button>
+          <button class="btn-s btn-ghost" onclick="$('iaPergunta').value=this.textContent;perguntarIA()">Dicas de marketing para barbearia</button>
+        </div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:24px;">
+        <div class="fl">
+          <label>Sua pergunta</label>
+          <textarea id="iaPergunta" class="fi" rows="3" placeholder="Ex: Como posso atrair mais clientes nas segundas e terças?" style="resize:none;"></textarea>
+        </div>
+        <button id="iaBtnEnviar" class="btn-main" onclick="perguntarIA()" style="margin-top:8px;">Perguntar</button>
+        <div id="iaResposta" style="margin-top:20px;font-size:14px;line-height:1.8;color:var(--mu);white-space:pre-wrap;"></div>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
   <!-- MODAL UPGRADE -->
 <div class="mbg" id="mUpgrade">
