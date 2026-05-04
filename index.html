@@ -1383,10 +1383,64 @@ function goUpgrade(){
 }
 function renderPlanChip(){
   const plan = S.user?.plan||'Free';
-  const chip = document.getElementById('sbChip');
-  const btn = document.getElementById('btnUpgrade');
+  const chip = $('sbChip');
+  const btn = $('btnUpgrade');
   if(chip) chip.textContent = plan;
   if(btn) btn.style.display = plan==='Free' ? 'block' : 'none';
+  checkPlanLimits();
+}
+
+function getPlan(){
+  return S.user?.plan||'Free';
+}
+
+function isPro(){
+  return ['Pro','Turbo'].includes(getPlan());
+}
+
+function isTurbo(){
+  return getPlan()==='Turbo';
+}
+
+function checkPlanLimits(){
+  const plan = getPlan();
+  const isFree = plan==='Free';
+  const isProOrMore = isPro();
+  const isTurboOnly = isTurbo();
+
+  // Esconde/mostra abas baseado no plano
+  const nlFiados = $('nl-fiados');
+  const nlGastos = $('nl-gastos');
+  const nlInvest = $('nl-invest');
+  const nlAgenda = $('nl-agenda');
+  const nlIA = $('nl-ia');
+
+  if(nlFiados) nlFiados.style.opacity = isProOrMore ? '1' : '0.4';
+  if(nlGastos) nlGastos.style.opacity = isProOrMore ? '1' : '0.4';
+  if(nlInvest) nlInvest.style.opacity = isProOrMore ? '1' : '0.4';
+  if(nlAgenda) nlAgenda.style.opacity = isProOrMore ? '1' : '0.4';
+  if(nlIA) nlIA.style.opacity = isTurboOnly ? '1' : '0.4';
+}
+
+function requirePro(feature){
+  if(!isPro()){
+    showUpgradeModal('Para usar ' + feature + ', você precisa do plano PRO ou superior.');
+    return false;
+  }
+  return true;
+}
+
+function requireTurbo(feature){
+  if(!isTurbo()){
+    showUpgradeModal('Para usar ' + feature + ', você precisa do plano Turbo.');
+    return false;
+  }
+  return true;
+}
+
+function showUpgradeModal(msg){
+  $('upgradeMsg').textContent = msg;
+  openM('mUpgrade');
 }
 async function doLogout(){
   await sb.auth.signOut();
