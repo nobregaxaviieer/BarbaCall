@@ -1947,6 +1947,7 @@ let S_gastos = JSON.parse(localStorage.getItem('bc_gastos')||'[]');
 function saveGastos(){ localStorage.setItem('bc_gastos', JSON.stringify(S_gastos)); }
 
 function addGasto(){
+  if(!requirePro('Gastos')) return;
   const desc = $('gDesc').value.trim();
   const cat = $('gCat').value;
   const valor = parseFloat($('gValor').value);
