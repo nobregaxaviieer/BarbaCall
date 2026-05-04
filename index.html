@@ -1999,6 +1999,7 @@ let S_invest = JSON.parse(localStorage.getItem('bc_invest')||'[]');
 function saveInvest(){ localStorage.setItem('bc_invest', JSON.stringify(S_invest)); }
 
 function addInvest(){
+  if(!requirePro('Investimentos')) return;
   const item = $('iItem').value.trim();
   const cat = $('iCat').value;
   const valor = parseFloat($('iValor').value);
