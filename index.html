@@ -737,16 +737,16 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
       <div class="nl" id="nl-cfg" onclick="tab('cfg',this)">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>Configurações
       </div> <div class="sb-sec" style="margin-top:10px;">Ferramentas</div>
-      <div class="nl" id="nl-fiados" onclick="tab('fiados',this)">
+      <div class="nl" id="nl-fiados" onclick="isPro()?tab('fiados',this):showUpgradeModal('Para acessar Fiados, você precisa do plano PRO ou superior.')">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zM7 4h2v5H7zm0 6h2v2H7z"/></svg>Fiados
       </div>
-      <div class="nl" id="nl-gastos" onclick="tab('gastos',this)">
+      <div class="nl" id="nl-gastos" onclick="isPro()?tab('gastos',this):showUpgradeModal('Para acessar Gastos, você precisa do plano PRO ou superior.')">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h12v2H2zm0 3h12v9H2zm3 2v5h2V7zm4 0v5h2V7z"/></svg>Gastos
       </div>
-      <div class="nl" id="nl-invest" onclick="tab('invest',this)">
+      <div class="nl" id="nl-invest" onclick="isPro()?tab('invest',this):showUpgradeModal('Para acessar Investimentos, você precisa do plano PRO ou superior.')">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M1 11l4-4 3 3 4-5 3 2V13H1z"/></svg>Investimentos
       </div>
-      <div class="nl" id="nl-agenda" onclick="tab('agenda',this)">
+      <div class="nl" id="nl-agenda" onclick="isPro()?tab('agenda',this):showUpgradeModal('Para acessar Agenda, você precisa do plano PRO ou superior.')">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="14" height="13" rx="2"/><path d="M5 1v3M11 1v3M1 7h14"/></svg>Agenda
       </div>
       <div class="sb-sec" style="margin-top:10px;">Inteligência</div>
@@ -773,7 +773,7 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
       <div class="tbar">
         <div class="tbar-l"><h2>Dashboard</h2><p id="greet">—</p></div>
         <div class="tbar-r">
-          <button class="btn-s btn-ghost" onclick="openM('mUpload')">↑ Importar CSV</button>
+          <button class="btn-s btn-ghost" onclick="isPro()?openM('mUpload'):showUpgradeModal('Para importar CSV, você precisa do plano PRO ou superior.')">↑ Importar CSV</button>
           <button class="btn-s btn-white" onclick="openM('mAdd')">+ Novo cliente</button>
         </div>
       </div>
@@ -1736,6 +1736,14 @@ async function sendAlert(){
 
 // ═══ CLIENTS ═══
 async function addClient(){
+  if(!isPro() && S.clients.length >= 50){
+    showUpgradeModal('Você atingiu o limite de 50 clientes do plano Free. Faça upgrade para o PRO e cadastre até 500 clientes!');
+    return;
+  }
+  if(isPro() && !isTurbo() && S.clients.length >= 500){
+    showUpgradeModal('Você atingiu o limite de 500 clientes do plano PRO. Faça upgrade para o Turbo e tenha clientes ilimitados!');
+    return;
+  }
   const name = $('acN').value.trim();
   const phone= $('acP').value.trim();
   const addr = $('acA').value.trim();
