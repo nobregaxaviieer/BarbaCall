@@ -1424,7 +1424,7 @@ function goUpgrade(){
     window.open('https://buy.stripe.com/6oUfZggxD77Se0JcU79IQ01','_blank');
   }
 }
-  const plan = S.user.plan||'Free';
+  const plan = S.user?.plan||'Free';
   if(plan==='Free'){
     window.open('https://buy.stripe.com/aFaaEW6X3ak41dXg6j9IQ00','_blank');
   } else if(plan==='Pro'){
