@@ -2055,6 +2055,7 @@ let S_agenda = JSON.parse(localStorage.getItem('bc_agenda')||'[]');
 function saveAgenda(){ localStorage.setItem('bc_agenda', JSON.stringify(S_agenda)); }
 
 function addAgenda(){
+  if(!requirePro('Agenda')) return;
   const titulo = $('agTitulo').value.trim();
   const data = $('agData').value;
   const hora = $('agHora').value;
