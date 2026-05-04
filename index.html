@@ -2073,6 +2073,44 @@ function renderAgenda(){
   const a = S_agenda.find(x=>x.id===id);
   if(a){ a.confirmado = !a.confirmado; saveAgenda(); renderAgenda(); }
 }
+  // IA ASSISTENTE
+function acessarIA(){
+  if(!requireTurbo('Assistente IA')) return;
+  tab('ia', $('nl-ia'));
+}
+
+async function perguntarIA(){
+  const pergunta = $('iaPergunta').value.trim();
+  if(!pergunta){ toast('Digite sua pergunta','#FF4444'); return; }
+  
+  const btn = $('iaBtnEnviar');
+  const respostaEl = $('iaResposta');
+  btn.disabled = true;
+  btn.textContent = 'Pensando...';
+  respostaEl.textContent = '';
+  
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Você é um assistente especializado em barbearias brasileiras. Ajude o dono da barbearia com dicas práticas, sugestões de preços, marketing, fidelização de clientes e gestão do negócio. Responda em português brasileiro de forma direta e prática.\n\nPergunta: ${pergunta}`
+        }]
+      })
+    });
+    const data = await response.json();
+    respostaEl.textContent = data.content?.[0]?.text || 'Não consegui gerar uma resposta.';
+  } catch(e) {
+    respostaEl.textContent = 'Erro ao conectar com a IA. Tente novamente.';
+  }
+  
+  btn.disabled = false;
+  btn.textContent = 'Perguntar';
+}
   
 </script>
 </body>
