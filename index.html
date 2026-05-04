@@ -1591,7 +1591,7 @@ function scrollTo(secId){
 })();
 
 function tab(t, el){
-  ['Dash','Clientes','Reat','Camp','Cfg','Fiados','Gastos','Invest','Agenda'].forEach(x=>{ const e=$(('t'+x)); if(e) e.style.display='none'; });
+  ['Dash','Clientes','Reat','Camp','Cfg','Fiados','Gastos','Invest','Agenda','Ia'].forEach(x=>{ const e=$(('t'+x)); if(e) e.style.display='none'; });
   const tMap = {dash:'Dash',clientes:'Clientes',reat:'Reat',camp:'Camp',cfg:'Cfg',fiados:'Fiados',gastos:'Gastos',invest:'Invest',agenda:'Agenda',ia:'Ia'};
   const el2 = $('t'+tMap[t]);
   if(el2) el2.style.display='block';
