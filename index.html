@@ -259,8 +259,11 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
 .lnav-logo{font-family:var(--fd);font-size:20px;font-weight:700;letter-spacing:-.5px;}
 .lnav-logo em{color:var(--mu);font-style:normal;}
 .lnav-links{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.lnav-link{font-size:13px;font-weight:500;color:var(--mu);cursor:pointer;padding:6px 10px;border-radius:7px;transition:.12s;background:none;border:none;font-family:var(--fb);}
-.lnav-link:hover{color:var(--w);}
+.lnav-link{font-size:13px;font-weight:300;color:var(--mu);cursor:pointer;padding:6px 10px;border-radius:7px;transition:.12s;background:none;border:none;font-family:var(--fb);position:relative;overflow:hidden;}
+.lnav-link span{display:block;transition:transform .4s cubic-bezier(.32,.72,0,1);}
+.lnav-link::after{content:attr(data-text);position:absolute;top:100%;left:0;right:0;text-align:center;color:var(--gn);transition:transform .4s cubic-bezier(.32,.72,0,1);}
+.lnav-link:hover span{transform:translateY(-100%);}
+.lnav-link:hover::after{transform:translateY(-100%);}
 .lnav-cta{font-size:13px;font-weight:700;padding:8px 20px;border-radius:8px;background:var(--w);color:#080808;border:none;cursor:pointer;font-family:var(--fb);transition:.12s;}
 .lnav-cta:hover{background:var(--ac);}
 @media(max-width:600px){.lnav{padding:14px 20px;}.lnav-links .lnav-link{display:none;}}
@@ -388,11 +391,13 @@ html,body{height:100%;background:var(--bg);color:var(--w);font-family:var(--fb);
   <nav class="lnav">
     <div class="lnav-logo">Barba<em>Call</em></div>
     <div class="lnav-links">
-      <button class="lnav-link" onclick="scrollTo('sec-features')">Funcionalidades</button>
-      <button class="lnav-link" onclick="scrollTo('sec-how')">Como funciona</button>
-      <button class="lnav-link" onclick="scrollTo('sec-pricing')">Preços</button>
-      <button class="lnav-link" onclick="scrollTo('sec-testi')">Depoimentos</button>
-      <button class="lnav-link" onclick="goS('sLogin')">Entrar</button>
+      <button class="lnav-link" data-text="Funcionalidades" onclick="scrollTo('sec-features')"><span>Funcionalidades</span></button>
+      <button class="lnav-link" data-text="Como funciona" onclick="scrollTo('sec-how')"><span>Como funciona</span></button>
+      <button class="lnav-link" data-text="Preços" onclick="scrollTo('sec-pricing')"><span>Preços</span></button>
+      <button class="lnav-link" data-text="Depoimentos" onclick="scrollTo('sec-testi')"><span>Depoimentos</span></button>
+      <button class="lnav-link" data-text="Entrar" onclick="goS('sLogin')"><span>Entrar</span></button>
+      <button class="lnav-cta" onclick="goS('sRegister')">Começar grátis →</button>
+    </div>
       <button class="lnav-cta" onclick="goS('sRegister')">Começar grátis →</button>
     </div>
   </nav>
